@@ -1,0 +1,32 @@
+version: '3.8'
+
+services:
+  app:
+    build: .
+    ports:
+      - "3000:3000"
+    depends_on:
+      - redis
+      - mysql
+    env_file:
+      - .env
+    volumes:
+      - ./:/usr/local/apps/myapp/dev
+      - ignore:/usr/local/apps/myapp/dev/node_modules
+
+  redis:
+    image: "redis:alpine"
+    ports:
+      - "6380:6379"
+    command: ["redis-server", "--appendonly", "yes"]
+
+  mysql:
+    image: mysql:5.7
+    ports:
+      - "3307:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
+      MYSQL_DATABASE: ${DB_NAME}
+
+volumes:
+  ignore:
